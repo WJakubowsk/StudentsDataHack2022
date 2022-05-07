@@ -165,8 +165,6 @@ def preprocess_data(data, test_data = False):
             if col not in data.columns:
                 data[col] = 0
 
-<<<<<<< HEAD
-=======
     global to_drop
     
     if not test_data:
@@ -176,7 +174,6 @@ def preprocess_data(data, test_data = False):
         
     data = data.drop(to_drop, axis=1)
              
->>>>>>> e72bce14cfb478ffbe76a37d3ba9b1634b9f5814
     data = data.reindex(sorted(data.columns), axis=1)     
     
     print(list(data.columns))
