@@ -29,7 +29,7 @@ def transform(text):
 
 amenitiesColumns = None
 
-def extract_amenities(data):
+def extract_amenities(data, test_data = False):
     data_copy = data.copy()
     data_copy['amenities'] = data_copy['amenities'].apply(lambda item: transform(item))
     mlb = MultiLabelBinarizer(sparse_output=True)
@@ -38,10 +38,14 @@ def extract_amenities(data):
             mlb.fit_transform(data_copy['amenities']),
             index=data.index,
             columns=mlb.classes_))
-    global amenitiesColumns
-    amenitiesColumns = list(mlb.classes_)
-    amenitiesColumns.remove('')
-    tmp = copy.deepcopy(amenitiesColumns)
+    if not test_data:
+        global amenitiesColumns
+        amenitiesColumns = list(mlb.classes_)
+        amenitiesColumns.remove('')
+        tmp = copy.deepcopy(amenitiesColumns)
+    else:
+        tmp = list(mlb.classes_)
+        tmp.remove('')
     data_copy.drop(['amenities', ''], axis = 1, inplace = True)
     return data_copy, tmp
 
@@ -50,7 +54,6 @@ def preprocess_data(data, test_data = False):
 
     col_to_drop = ['id', 'name', 'neighbourhood', 'zipcode', 'thumbnail_url', 'description']
     data.drop(col_to_drop, axis = 1, inplace = True)
-    data = data[data.log_price != 0]
 
     data['host_response_rate'] = data['host_response_rate'].str.rstrip('%').astype('float')
 
@@ -62,7 +65,7 @@ def preprocess_data(data, test_data = False):
 
     data['first_review'] = data.first_review.fillna(pd.to_datetime('2016-07-01')) # wartości najczęściej występujące
     data['last_review'] = data.last_review.fillna(pd.to_datetime('2017-09-01'))  # wartości najczęściej występujące
-    data['last_review'] = data.host_since.fillna(pd.to_datetime('2015-07-01')) # wartości najczęściej występujące
+    data['host_since'] = data.host_since.fillna(pd.to_datetime('2015-07-01')) # wartości najczęściej występujące
 
     data['first_review_year'] = data['first_review'].dt.year
     data['first_review_month'] = data['first_review'].dt.month
@@ -75,23 +78,24 @@ def preprocess_data(data, test_data = False):
     data['host_since_year'] = data['host_since'].dt.year
     data['host_since_month'] = data['host_since'].dt.month
     data.drop('host_since', axis = 1, inplace = True)
-
-    data, pom = extract_amenities(data)
+    
+    data, pom = extract_amenities(data, test_data)
 
     global amenitiesColumns
-
+    
     if test_data:
         for col in pom:
             if col not in amenitiesColumns:
                 data.drop(col, axis = 1, inplace = True)
-            
+        
         for col in amenitiesColumns:
             if col not in data.columns:
                 data[col] = 0
-        
-        
+    
+    print(data.isnull().sum()[data.isnull().sum() > 0] + "\n")
+             
     data = data.reindex(sorted(data.columns), axis=1)     
-
+    
     if not test_data:
         one_hot_cols = ['room_type', 'bed_type', 'city', 'property_type']
         knn_cols = ['bathrooms', 'beds', 'bedrooms', 'host_response_rate']
