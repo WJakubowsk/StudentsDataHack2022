@@ -94,9 +94,13 @@ def preprocess_data(data, test_data = False):
             if col not in data.columns:
                 data[col] = 0
 
-    cor_matrix = data.corr()
-    upper_tri = cor_matrix.where(np.triu(np.ones(cor_matrix.shape),k=1).astype(np.bool))
-    to_drop = [column for column in upper_tri.columns if any(upper_tri[column].abs() > 0.8)]
+    global to_drop
+    
+    if not test_data:
+        cor_matrix = data.corr()
+        upper_tri = cor_matrix.where(np.triu(np.ones(cor_matrix.shape),k=1).astype(np.bool))
+        to_drop = [column for column in upper_tri.columns if any(upper_tri[column].abs() > 0.8)]
+        
     data = data.drop(to_drop, axis=1)
              
     data = data.reindex(sorted(data.columns), axis=1)     
