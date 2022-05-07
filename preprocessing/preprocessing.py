@@ -38,6 +38,7 @@ def extract_amenities(data, test_data = False):
             mlb.fit_transform(data_copy['amenities']),
             index=data.index,
             columns=mlb.classes_))
+    
     if not test_data:
         global amenitiesColumns
         amenitiesColumns = list(mlb.classes_)
@@ -46,6 +47,7 @@ def extract_amenities(data, test_data = False):
     else:
         tmp = list(mlb.classes_)
         tmp.remove('')
+        
     data_copy.drop(['amenities', ''], axis = 1, inplace = True)
     return data_copy, tmp
 
@@ -91,8 +93,6 @@ def preprocess_data(data, test_data = False):
         for col in amenitiesColumns:
             if col not in data.columns:
                 data[col] = 0
-    
-    print(data.isnull().sum()[data.isnull().sum() > 0] + "\n")
              
     data = data.reindex(sorted(data.columns), axis=1)     
     
