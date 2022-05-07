@@ -176,7 +176,7 @@ def preprocess_data(data, test_data = False):
              
     data = data.reindex(sorted(data.columns), axis=1)     
     
-    print(list(data.columns))
+    #print(list(data.columns))
     
     if not test_data:
         one_hot_cols = ['room_type', 'bed_type', 'city', 'property_type']
