@@ -9,5 +9,5 @@ Authors:
 
 
 Problem:
-- price prediction for holidays rent in six cities in USA
+- Predicting rent prices for holiday stay in properties located in  six cities in USA
 
