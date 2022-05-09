@@ -11,3 +11,5 @@ Authors:
 Problem:
 - Predicting rent prices for holiday stay in properties located in  six cities in USA
 
+Result:
+Third place in competition
